@@ -8,6 +8,10 @@ class CallPlayer(
     def declare_action(self, valid_actions, hole_card, round_state):
         # valid_actions format => [fold_action_info, call_action_info, raise_action_info]
 
+        print(valid_actions)
+        print(hole_card)
+        print(round_state)
+
         call_action_info = valid_actions[1]
         action, amount = call_action_info["action"], call_action_info["amount"]
         return action, amount  # action returned here is sent to the poker engine
@@ -30,3 +34,4 @@ class CallPlayer(
 
 def setup_ai():
     return CallPlayer()
+

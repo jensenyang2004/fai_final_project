@@ -12,10 +12,9 @@ class PokerDQNPlayer(BasePokerPlayer):
     def declare_action(self, valid_actions, hole_card, round_state):
         state = self.get_state(hole_card, round_state)
         action_idx = self.agent.act(state)
-        print("shit")
         self.last_state = state
         self.last_action = action_idx
-        
+        print(action_idx)
         if valid_actions[action_idx]['action'] == 'raise':
             amount = random.randint(valid_actions[action_idx]['amount']['min'], valid_actions[action_idx]['amount']['max'])
         else:
@@ -35,9 +34,12 @@ class PokerDQNPlayer(BasePokerPlayer):
         return np.array(state, dtype=int)
 
     def encode_cards(self, cards):
+        
         card_map = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, 'T': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12}
         suit_map = {'C': 0, 'D': 1, 'H': 2, 'S': 3}
         encoding = [0] * (13 * 4)
+        if(cards == None):
+            return encoding
         for card in cards:
             rank, suit = card[0], card[1]
             index = suit_map[rank] * 4 + card_map[suit]

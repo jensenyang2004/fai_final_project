@@ -42,6 +42,8 @@ class DQNAgent:
         return torch.argmax(act_values[0]).item()
 
     def replay(self, batch_size):
+        if len(self.memory) < batch_size:
+            return  # Not enough samples to perform replay
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, next_state, done in minibatch:
             state = torch.FloatTensor(state).unsqueeze(0)
