@@ -1,8 +1,14 @@
 from game.players import BasePokerPlayer
-# from agents.DQNAgent import DQNAgent
-from agents.DQNAgent_torch import DQNAgent
+from agents.DQNAgent import DQNAgent
+# from agents.DQNAgent_torch import DQNAgent
 import numpy as np
 import random
+
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['TF_NUM_INTEROP_THREADS'] = '1'
+os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
+
 
 class PokerDQNPlayer(BasePokerPlayer):
     def __init__(self, state_size, action_size, training, model_file = None):

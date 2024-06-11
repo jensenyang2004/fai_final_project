@@ -14,11 +14,12 @@ from baseline6 import setup_ai as baseline6_ai
 from baseline7 import setup_ai as baseline7_ai
 
 from agents.DQNplayer import setup_ai as DQNplayer
-from agents.RLplayer import setup_ai as RLplayer
-from agents.MonetCarlo import setup_ai as MonteCarlo
+# from agents.RLplayer import setup_ai as RLplayer
+# from agents.MonetCarlo import setup_ai as MonteCarlo
 
 
-player = DQNplayer(True, "./fai_final_project/torchModel/Model_108_6_100")
+# player = DQNplayer(True, "./fai_final_project/torchModel/Model_108_6_100")
+player = DQNplayer(False)
 
 
 config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
@@ -34,7 +35,7 @@ config.register_player(name="RL", algorithm=player)
 
 all_game_results = []
 RL_gameWins = 0
-total_games = 100  
+total_games = 5  
 
 for i in range(total_games):
     print(f"\033[31mepisod {i + 1} / {total_games} \033[0m")
@@ -46,5 +47,6 @@ for i in range(total_games):
 print(f"\033[31mgame wins {player.gameWins} / {total_games * 20} \033[0m")
     
 
-player.save_model("./fai_final_project/torchModel/Model_108_6_100")
+# player.save_model("./fai_final_project/torchModel/Model_108_6_100")
 
+player.save_model("./fai_final_project/tfModel/Model_108_6_100")

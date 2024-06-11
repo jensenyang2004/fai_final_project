@@ -73,16 +73,17 @@ class DQNAgent:
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
     
-    def save(self, name = "Model01"):
+    def save(self, name="Model01"):
         self.model.save(name)
         # Save additional attributes
-        np.savez(name + "_attributes", epsilon=self.epsilon, memory=list(self.memory))
+        np.savez(name + "_attributes.npz", epsilon=self.epsilon, memory=list(self.memory))
+        print(f"\033[31msave successfully!!! \033[0m")
 
     def load(self, name):
         self.model.load(name)
-        print(f"\033[31mload successfully!!! \033[0m")
         # Load additional attributes
         data = np.load(name + "_attributes.npz", allow_pickle=True)
         self.epsilon = data['epsilon']
         self.memory = deque(data['memory'], maxlen=2000)
+        self.update_target_model()
         print(f"\033[31mload successfully!!! \033[0m")
