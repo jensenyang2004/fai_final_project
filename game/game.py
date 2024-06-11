@@ -11,7 +11,7 @@ def start_poker(config, verbose=2):
     dealer = Dealer(config.sb_amount, config.initial_stack, config.ante)
     dealer.set_verbose(verbose)
     dealer.set_blind_structure(config.blind_structure)
-    for info in config.players_info:
+    for info in config.players_info: 
         dealer.register_player(info["name"], info["algorithm"])
     result_message = dealer.start_game(config.max_round)
     return _format_result(result_message)

@@ -18,33 +18,24 @@ from agents.RLplayer import setup_ai as RLplayer
 from agents.MonetCarlo import setup_ai as MonteCarlo
 
 
-player = DQNplayer(True, "./fai_final_project/torchModel/Model_108_6_100")
-
+player = DQNplayer(False, "./fai_final_project/torchModel/Model_108_6_100")
 
 config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
-config.register_player(name="p1", algorithm=baseline0_ai())
-config.register_player(name="p2", algorithm=baseline1_ai())
-config.register_player(name="p3", algorithm=baseline2_ai())
-config.register_player(name="p4", algorithm=baseline3_ai())
-config.register_player(name="p5", algorithm=baseline4_ai())
-config.register_player(name="p6", algorithm=baseline5_ai())
-config.register_player(name="p7", algorithm=baseline6_ai())
-config.register_player(name="p8", algorithm=baseline7_ai())
+config.register_player(name="p1", algorithm=baseline2_ai())
 config.register_player(name="RL", algorithm=player)
+
 
 all_game_results = []
 RL_gameWins = 0
-total_games = 100  
+total_games = 5   
 
 for i in range(total_games):
-    print(f"\033[31mepisod {i + 1} / {total_games} \033[0m")
+    print(f"\033[31mepisod {i+1} / {total_games} \033[0m")
     game_result = start_poker(config, verbose=1)
-    # all_game_results.append(game_result)
-    # if(game_result["players"][0]['stack'] < game_result["players"][1]['stack']):
-    #     RL_gameWins += 1
+    all_game_results.append(game_result)
+    if(game_result["players"][0]['stack'] < game_result["players"][1]['stack']):
+        RL_gameWins += 1
 
-print(f"\033[31mgame wins {player.gameWins} / {total_games * 20} \033[0m")
+print(f"\033[31mtotal wins {RL_gameWins} / {total_games} \033[0m")
+
     
-
-player.save_model("./fai_final_project/torchModel/Model_108_6_100")
-

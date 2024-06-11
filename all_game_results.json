@@ -1,0 +1,25 @@
+[
+    {
+        "rule": {
+            "initial_stack": 1000,
+            "max_round": 1,
+            "small_blind_amount": 5,
+            "ante": 0,
+            "blind_structure": {}
+        },
+        "players": [
+            {
+                "name": "p1",
+                "uuid": "ipkeqttzfgndmrlomitkzu",
+                "stack": 1005,
+                "state": "participating"
+            },
+            {
+                "name": "RL",
+                "uuid": "zrcjbeenltlutlacmugape",
+                "stack": 995,
+                "state": "participating"
+            }
+        ]
+    }
+]
