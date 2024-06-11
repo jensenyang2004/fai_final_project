@@ -1,8 +1,13 @@
 from game.players import BasePokerPlayer
 from agents.DQNAgent import DQNAgent
+from game.engine.hand_evaluator import HandEvaluator as evaluator
 # from agents.DQNAgent_torch import DQNAgent
 import numpy as np
 import random
+from collections import namedtuple
+
+
+Card = namedtuple('Card', ['rank', 'suit'])
 
 import os
 os.environ['OMP_NUM_THREADS'] = '1'
@@ -19,12 +24,19 @@ class PokerDQNPlayer(BasePokerPlayer):
         self.last_action = None
         self.training = training
         self.gameWins = 0
+        self.gamePlay = 0
 
     def declare_action(self, valid_actions, hole_card, round_state):
-
         if self.last_state is not None and self.last_action is not None and self.training:
+            reward = 0
+            for player in round_state["seats"]:
+                if(player["name"] == "RL"):
+                    if(player["state"] == "participating"):
+                        reward = 0
+                    else:
+                        reward = -1
             next_state = self.get_state(None, round_state)
-            self.agent.remember(self.last_state, self.last_action, 0, next_state, True)
+            self.agent.remember(self.last_state, self.last_action, reward, next_state, True)
             self.agent.replay(32)  # Batch size for replay
             self.last_state = None
             self.last_action = None
@@ -46,6 +58,10 @@ class PokerDQNPlayer(BasePokerPlayer):
         return actions_choices[action_idx]["action"], actions_choices[action_idx]["amount"]
 
     def get_state(self, hole_card, round_state, valid_actions = None):
+        hole_card_obj = [self.convert_to_card(x) for x in hole_card]
+        community_card_obj = [self.convert_to_card(x) for x in round_state["community_card"]]
+        result = evaluator.gen_hand_rank_info(hole_card_obj, community_card_obj)
+        print(result)
         # Encode state
         hole_card_encoding = self.encode_cards(hole_card)
         # Encode community cards
@@ -61,6 +77,30 @@ class PokerDQNPlayer(BasePokerPlayer):
             # + next_stake
         )
         return np.array(state, dtype=int)
+
+    def convert_to_card(card_str):
+        print("hey")
+        rank_str = card_str[1]  # Get the rank part of the string
+        suit_str = card_str[0]   # Get the suit part of the string
+        
+        # Mapping of rank strings to integers
+        rank_map = {
+            'A': 14, 'K': 13, 'Q': 12, 'J': 11,
+            'T': 10, '9': 9, '8': 8, '7': 7,
+            '6': 6, '5': 5, '4': 4, '3': 3, '2': 2
+        }
+        
+        # Mapping of suit strings
+        suit_map = {
+            'C': 'clubs',
+            'D': 'diamonds',
+            'H': 'hearts',
+            'S': 'spades'
+        }
+        
+        rank = rank_map[rank_str]
+        suit = suit_map[suit_str]
+        return Card(rank=rank, suit=suit)
 
     def encode_cards(self, cards):
         card_map = {'2': 0, '3': 1, '4': 2, '5': 3, '6': 4, '7': 5, '8': 6, '9': 7, 'T': 8, 'J': 9, 'Q': 10, 'K': 11, 'A': 12}
@@ -87,9 +127,7 @@ class PokerDQNPlayer(BasePokerPlayer):
         pass
 
     def receive_round_result_message(self, winners, hand_info, round_state):
-        # reward = 1
-        if self in winners:
-            self.gameWins += 1
+        self.gamePlay += 1
         if self.last_state is not None and self.last_action is not None and self.training:
             next_state = self.get_state(None, round_state)
             self.agent.remember(self.last_state, self.last_action, self.calculate_reward(winners, hand_info), next_state, True)

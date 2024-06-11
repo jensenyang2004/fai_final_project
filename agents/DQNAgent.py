@@ -20,8 +20,8 @@ class DQN:
     def predict(self, state):
         return self.model.predict(state)
 
-    def fit(self, state, target, verbose=0):
-        self.model.fit(state, target, epochs=1, verbose=verbose)
+    def fit(self, state, target, epochs=1, verbose=0):
+        self.model.fit(state, target, epochs=epochs, verbose=verbose)
 
     def load(self, name):
         self.model = models.load_model(name)
@@ -59,8 +59,12 @@ class DQNAgent:
     def replay(self, batch_size):
         if len(self.memory) < batch_size:
             return  # Not enough samples to perform replay
+
         minibatch = random.sample(self.memory, batch_size)
-        for state, action, reward, next_state, done in minibatch:
+        states = np.zeros((batch_size, self.state_size))
+        targets = np.zeros((batch_size, self.action_size))
+
+        for i, (state, action, reward, next_state, done) in enumerate(minibatch):
             state = np.reshape(state, [1, self.state_size])
             next_state = np.reshape(next_state, [1, self.state_size])
             target = self.model.predict(state)
@@ -69,7 +73,11 @@ class DQNAgent:
             else:
                 t = self.target_model.predict(next_state)[0]
                 target[0][action] = reward + self.gamma * np.amax(t)
-            self.model.fit(state, target, verbose=0)
+            states[i] = state
+            targets[i] = target
+
+        self.model.fit(states, targets, epochs=1, verbose=0)
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
     
@@ -77,7 +85,7 @@ class DQNAgent:
         self.model.save(name)
         # Save additional attributes
         np.savez(name + "_attributes.npz", epsilon=self.epsilon, memory=list(self.memory))
-        print(f"\033[31msave successfully!!! \033[0m")
+        print(f"\033[32msave successfully!!! \033[0m")
 
     def load(self, name):
         self.model.load(name)
@@ -86,4 +94,4 @@ class DQNAgent:
         self.epsilon = data['epsilon']
         self.memory = deque(data['memory'], maxlen=2000)
         self.update_target_model()
-        print(f"\033[31mload successfully!!! \033[0m")
+        print(f"\033[32mload successfully!!! \033[0m")
