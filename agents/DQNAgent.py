@@ -5,13 +5,21 @@ from collections import deque
 
 from keras import layers, models, optimizers
 
+import os
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['TF_NUM_INTEROP_THREADS'] = '1'
+os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
+
+tf.config.threading.set_intra_op_parallelism_threads(1)
+tf.config.threading.set_inter_op_parallelism_threads(1)
+
 class DQN:
     def __init__(self, state_size, action_size):
         self.model = self._build_model(state_size, action_size)
 
     def _build_model(self, state_size, action_size):
         model = models.Sequential()
-        model.add(layers.Dense(100, input_dim=state_size, activation='relu'))
+        model.add(layers.Dense(24, input_dim=state_size, activation='relu'))
         model.add(layers.Dense(24, activation='relu'))
         model.add(layers.Dense(action_size, activation='linear'))
         model.compile(loss='mse', optimizer=optimizers.Adam())
@@ -35,12 +43,14 @@ class DQNAgent:
         self.state_size = state_size
         self.action_size = action_size
         self.memory = deque(maxlen=2000)
-        self.gamma = 0.95  # Discount rate
+        self.gamma = 0.90  # Discount rate
         self.epsilon = 1.0  # Exploration rate
         self.epsilon_min = 0.01
         self.epsilon_decay = 0.995
         self.model = DQN(state_size, action_size)
         self.target_model = DQN(state_size, action_size)
+        self.update_target_counter = 0
+        self.update_target_frequency = 100  # Update target network every 1000 steps
         self.update_target_model()
 
     def update_target_model(self):
@@ -80,6 +90,11 @@ class DQNAgent:
 
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
+
+        self.update_target_counter += 1
+        if self.update_target_counter % self.update_target_frequency == 0:
+            self.update_target_model()
+        
     
     def save(self, name="Model01"):
         self.model.save(name)
