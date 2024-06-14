@@ -16,14 +16,14 @@ from baseline7 import setup_ai as baseline7_ai
 from agents.DQNplayer import setup_ai as DQNplayer
 from agents.RLplayer import setup_ai as RLplayer
 from agents.MonetCarlo import setup_ai as MonteCarlo
-
+# from train import setup_ai as smartDude
 
 # player = DQNplayer(False, "./fai_final_project/torchModel/Model_108_6_100")
-player = DQNplayer(False, "./fai_final_project/tfModel/Model_Simplified_v2")
-# player = DQNplayer(False)
+# player = DQNplayer(False, "./fai_final_project/tfModel/Model_Gitpod")
+player = DQNplayer(False, "./tfModel/Model_summer_BananaMilk_v3")
 
 config = setup_config(max_round=20, initial_stack=1000, small_blind_amount=5)
-config.register_player(name="p1", algorithm=baseline0_ai())
+config.register_player(name="p1", algorithm=baseline7_ai())
 config.register_player(name="RL", algorithm=player)
 # config.register_player(name="RL", algorithm=player)
 

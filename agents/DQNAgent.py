@@ -5,13 +5,13 @@ from collections import deque
 
 from keras import layers, models, optimizers
 
-import os
-os.environ['OMP_NUM_THREADS'] = '1'
-os.environ['TF_NUM_INTEROP_THREADS'] = '1'
-os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
+# import os
+# os.environ['OMP_NUM_THREADS'] = '1'
+# os.environ['TF_NUM_INTEROP_THREADS'] = '1'
+# os.environ['TF_NUM_INTRAOP_THREADS'] = '1'
 
-tf.config.threading.set_intra_op_parallelism_threads(1)
-tf.config.threading.set_inter_op_parallelism_threads(1)
+# tf.config.threading.set_intra_op_parallelism_threads(1)
+# tf.config.threading.set_inter_op_parallelism_threads(1)
 
 class DQN:
     def __init__(self, state_size, action_size):
@@ -20,6 +20,7 @@ class DQN:
     def _build_model(self, state_size, action_size):
         model = models.Sequential()
         model.add(layers.Dense(24, input_dim=state_size, activation='relu'))
+        model.add(layers.Dense(56, activation='relu'))
         model.add(layers.Dense(24, activation='relu'))
         model.add(layers.Dense(action_size, activation='linear'))
         model.compile(loss='mse', optimizer=optimizers.Adam())
